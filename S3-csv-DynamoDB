@@ -1,0 +1,98 @@
+import boto3
+
+s3 = boto3.client('s3')
+
+dynamodb = boto3.client('dynamodb')
+
+def lambda_handler(event,context):
+
+    for i in event["Records"]:
+
+        action = i['eventName']
+        bucket_name = i['s3']['bucket']['name']
+        key = i['s3']['object']['key']
+        
+        print(bucket_name)
+        print(key)
+
+    obj = s3.get_object(Bucket=bucket_name, Key=key)
+    
+    rows = obj['Body'].read().split(b'\n')
+    print(rows)
+  
+
+    
+    TableName = 'DemoTable'
+    
+    existing_table = dynamodb.list_tables()
+
+    print(existing_table)
+    
+    
+    if TableName not in existing_table['TableNames']:
+
+        table = dynamodb.create_table(
+        TableName= TableName,
+        KeySchema=[
+
+            {
+                'AttributeName': 'Name',
+                'KeyType': 'HASH'
+            },
+
+            {
+                'AttributeName': 'Age',
+                'KeyType': 'RANGE'
+            }
+
+        ],
+    
+        AttributeDefinitions=[
+
+            {
+                'AttributeName': 'Name',
+                'AttributeType': 'S'
+            },
+
+            {
+                'AttributeName': 'Age',
+                'AttributeType': 'S'
+            },
+
+        ],
+
+        ProvisionedThroughput={
+
+            'ReadCapacityUnits': 1,
+            'WriteCapacityUnits': 1
+        }
+
+        )
+    
+        if table['TableDescription']['ItemCount'] == 0:
+
+            print('Table Created Successfully')
+
+
+
+    else:
+
+        print("Table {} already exist".format(TableName))
+
+   
+    for row in rows:
+        
+        name=row.split(b',')[0]
+        age=row.split(b',')[1]
+        
+       
+        response = dynamodb.put_item(TableName = TableName, Item={
+            
+            'Name':{'S':name.decode("utf-8")} ,
+            'Age':{'S':age.decode("utf-8")} 
+            }) 
+        
+        
+        
+            
+            
