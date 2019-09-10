@@ -2,6 +2,8 @@ import os
 import boto3
 import time
 
+#######set environment varibles in Lambda###############
+
 ami = os.environ['ami']
 instance_type = os.environ['instance_type']
 key_name = os.environ['key_name']
@@ -16,7 +18,6 @@ deflambda_handler(event,context):
 
   Inst_id=create_ec2()
   send_msg(Inst_id)
-  del_ec2(Inst_id)
 
 def create_ec2():
     instance = ec2.create_instances(
@@ -43,12 +44,9 @@ defsend_msg(Inst_id):
         TopicArn="arn:aws:sns:ap-south-1:240631325177:EC2Topic",
         Message= msg
     )
-    return Inst_id
+   
 
 
-def del_ec2(Inst_id):
-DelInstance = client.terminate_instances(
-InstanceIds=[Inst_id]
-       )
+
 
 
