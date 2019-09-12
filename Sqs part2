@@ -1,0 +1,55 @@
+###################Lambda 2:##############################
+
+from datetime import datetime
+import json
+import os
+import boto3
+
+DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
+
+
+dynamodb = boto3.resource('dynamodb')
+
+def lambda_handler(event,context):
+    
+    print(event)
+
+    table = dynamodb.Table(DYNAMODB_TABLE)
+
+    print('Storing to DynamoDB')
+
+    response = table.put_item(
+        Item={
+            'MessageId': event['Records'][0]['messageId'],
+            'Body': event['Records'][0]['body'],
+            'Timestamp': datetime.now().isoformat()
+        })
+
+    print("Wrote message to DynamoDB:", json.dumps(response))
+
+from datetime import datetime
+import json
+import os
+import boto3
+
+DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
+
+
+dynamodb = boto3.resource('dynamodb')
+
+def lambda_handler(event,context):
+    
+    print(event)
+
+    table = dynamodb.Table(DYNAMODB_TABLE)
+
+    print('Storing to DynamoDB')
+
+    response = table.put_item(
+        Item={
+            'MessageId': event['Records'][0]['messageId'],
+            'Body': event['Records'][0]['body'],
+            'Timestamp': datetime.now().isoformat()
+        })
+
+    print("Wrote message to DynamoDB:", json.dumps(response))
